@@ -9,6 +9,7 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    // MARK: - 테스트
     private lazy var emailTextFieldView: UIView = {
         let view = UIView()
         view.backgroundColor = #colorLiteral(red: 0.2605174184, green: 0.2605243921, blue: 0.260520637, alpha: 1)
@@ -37,6 +38,7 @@ class ViewController: UIViewController {
         tf.autocorrectionType = .no
         tf.spellCheckingType = .no
         tf.keyboardType = .emailAddress
+        tf.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
         return tf
     }()
     
@@ -70,9 +72,13 @@ class ViewController: UIViewController {
         tf.spellCheckingType = .no
         tf.isSecureTextEntry = true
         tf.clearsOnBeginEditing = false
+        tf.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
         return tf
     }()
     
+    
+    
+    // MARK: - 패스워드 표시 버튼
     // 패스워드에 표시버튼 (비밀번호 가리기)
     private let passwordSecureButton: UIButton = {
         let button = UIButton(type: .custom)
@@ -93,6 +99,7 @@ class ViewController: UIViewController {
         button.setTitle("로그인", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         button.isEnabled = false
+        button.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -117,6 +124,8 @@ class ViewController: UIViewController {
     
     private let textViewHeight: CGFloat = 48
     
+    
+    // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -189,6 +198,7 @@ class ViewController: UIViewController {
         let alert = UIAlertController(title: "비밀번호 지우기", message: "비밀번호를 지우겠습니까?", preferredStyle: .alert)
         let success = UIAlertAction(title: "확인", style: .default) { _ in
             print("확인을 눌렀습니다.")
+            self.passwordTextField.text = ""
         }
         let cancel = UIAlertAction(title: "취소", style: .cancel) { _ in
             print("취소를 눌렀습니다.")
@@ -202,8 +212,34 @@ class ViewController: UIViewController {
         passwordTextField.isSecureTextEntry.toggle()
     }
     
+    @objc func textFieldEditingChanged(_ textField: UITextField) {
+        if textField.text?.count == 1 {
+            if textField.text?.first == " " {
+                textField.text = ""
+                return
+            }
+        }
+        
+        guard let email = emailTextField.text, !email.isEmpty,
+              let password = passwordTextField.text, !password.isEmpty else {
+            loginButton.backgroundColor = .clear
+            loginButton.isEnabled = false
+            return
+        }
+        loginButton.backgroundColor = .red
+        loginButton.isEnabled = true
+        
+    }
+    
+    @objc func loginButtonTapped() {
+        
+        print("로그인 버튼 클릭이 되었습니다.")
+    }
+    
 }
 
+
+// MARK: - 확장 ViewController
 extension ViewController: UITextFieldDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -228,14 +264,20 @@ extension ViewController: UITextFieldDelegate {
         
         if textField == emailTextField {
             emailTextFieldView.backgroundColor = #colorLiteral(red: 0.2605174184, green: 0.2605243921, blue: 0.260520637, alpha: 1)
-            emailInfoLabel.font = UIFont.systemFont(ofSize: 18)
-            emailLabelCenterConstraints.constant = 0
+            
+            if emailTextField.text == "" {
+                emailInfoLabel.font = UIFont.systemFont(ofSize: 18)
+                emailLabelCenterConstraints.constant = 0
+            }
         }
         
         if textField == passwordTextField {
             passwordTextFieldView.backgroundColor = #colorLiteral(red: 0.2605174184, green: 0.2605243921, blue: 0.260520637, alpha: 1)
-            passwordLabel.font = UIFont.systemFont(ofSize: 18)
-            passwordLabelCenterConstraints.constant = 0
+            
+            if passwordTextField.text == "" {
+                passwordLabel.font = UIFont.systemFont(ofSize: 18)
+                passwordLabelCenterConstraints.constant = 0
+            }
         }
         
         UIView.animate(withDuration: 0.3) {
