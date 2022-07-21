@@ -33,8 +33,8 @@ private lazy var passwordFieldView: UIView = {
 
 ```
 - 오토레이아웃을 동적으로 변화시키기 위해서는 해당 속성을 변수로 만들어야 한다.
-- ViewController에서 특정 프로토콜을 따르는 로직들은 가독성을 위해 확장을 통해 설계한다.
-     
+- ViewController에서 특정 프로토콜을 따르는 로직(ex: 델리게이트 프로토콜)들은 가독성을 위해 확장을 통해 설계한다.
+- alert창은 확인이나 취소와 같은 액션들을 추가해주어야 한다. (실제 동작시키는 부분은 present함수)
       
        
          
